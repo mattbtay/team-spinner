@@ -9,6 +9,8 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "flat-colors-js": "^1.0.5",
+    "randomcolor": "^0.6.2",
     "vue": "^3.0.0"
   },
   "devDependencies": {

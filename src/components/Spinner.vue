@@ -1,9 +1,9 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
 <template>
-  <div class="spinner">
+  <div class="spinner" :style="cssVars">
     <div class="gameboard" :style="buildPie">
      <div class="spinnerCharacter" :style="{backgroundImage:`url(${roman})` }">
-       <img class="arm" :class="{spinning: isSpinning}" :src="require('@/assets/arm2.png')" alt="">
+       <img class="arm" :class="{spinning: isSpinning}" :style="cssVars()" :src="require('@/assets/arm2.png')" alt="">
      </div>
     </div>
      <div class="list">
@@ -12,13 +12,15 @@
           {{choice.name}} <span class="colorbox" :style="{backgroundColor: choice.color}"></span>
         </li>
        </ul>
-       <button class="spinme" :class="{heartbeat: !isSpinning}" @click="spin">Spin Roman</button>
+       <button v-if="!showReset" class="spinme" :class="{heartbeat: !isSpinning}" @click="spin">Spin Roman</button>
+       <button v-if="showReset" class="resetme"  @click="reset">Reset Roman</button>
       </div>
   </div>
 </template>
 
 <script>
 var roman = require('@/assets/roman.png');
+
 export default {
   name: 'Spinner',
   props: ['users'],
@@ -27,7 +29,7 @@ export default {
       choices:this.users,
       roman: roman,
       isSpinning: false,
-      rand: `rotate(1200deg)`,
+      showReset: false,
     }
   },
   computed: {
@@ -57,12 +59,22 @@ export default {
   methods: {
     spin: function(){
       this.isSpinning = !this.isSpinning
+      this.randNumber()
+      this.showReset = true;
+    },
+    reset: function(){
+      this.isSpinning = !this.isSpinning
+      this.showReset = false;
     },
     randNumber(){
       var numb = Math.random() * (2160 - 720) + 720;
-      debugger; //eslint-disable-line
-      return `rotate(${numb}deg)`;
-    }
+      return numb;
+    },
+    cssVars(){
+      return {
+        '--animation-count': this.randNumber() + 'deg'
+      }
+    },
   }
 }
 </script>
@@ -71,11 +83,27 @@ export default {
 <style>
 
 .spinme {
-  background:blue;
+  background:green;
   color:#fff;
-  border:1px solid darkblue;
-  padding:10px 14px;
+  border:1px solid darkgreen;
+  padding:20px 24px;
   cursor:pointer;
+  position:absolute;
+  bottom:15px;
+  right:15px;
+  font-size:18px
+}
+
+.resetme {
+  background:red;
+  color:#fff;
+  border:1px solid darkred;
+  padding:20px 24px;
+  cursor:pointer;
+  position:absolute;
+  bottom:15px;
+  right:15px;
+  font-size:18px
 }
 
 .heartbeat {
@@ -99,21 +127,11 @@ export default {
   left:-238px;
   bottom:130px;
   transform-origin: right 38px;
-
+  transition: transform 3s ease-in-out;
 }
 
 .spinning {
-  animation: spin 3s ease-out 0s 1 normal forwards;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  50%,
-  100% {
-    transform: v-bind('randNumber()');
-  }
+  transform: rotate(var(--animation-count));
 }
 
 /* ----------------------------------------------
@@ -208,12 +226,13 @@ export default {
 }
 
 .gameboard  {
-  width:95vh;
-  height:95vh;
+  width:75vh;
+  height:75vh;
   border-radius:50%;
   display:flex;
   justify-content:center;
   align-items:center;
+  box-shadow: 0px 0px 28px rgb(0 0 0 / 50%);
 }
 
 .list {

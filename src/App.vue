@@ -1,9 +1,14 @@
 <template>
-  <Spinner :users="users" />
+
+    <textarea style="height:150px; width:400px; margin-top:15%;" v-if="!ready" v-model="users" />
+    <button style="margin-left:10px; display:block; margin:0 auto; background:black; color:#fff; padding:15px 24px; border:none;" v-if="!ready" @click="ready = true">Let Roman Choose</button>
+
+  <Spinner v-if="ready" :users="usersList()" />
 </template>
 
 <script>
 import Spinner from './components/Spinner.vue'
+var randomColor = require('randomcolor');
 
 export default {
   name: 'App',
@@ -12,21 +17,27 @@ export default {
   },
   data(){
     return {
-      users: [
-        {name: 'matt', color: '#4e79a7'}, 
-        {name: 'sofia', color: '#f28e2c'}, 
-        {name: 'andres', color: '#e15759'}, 
-        {name: 'Alan', color: '#59a14f'},
-        {name: 'Amit', color: '#000'},
-        {name: 'Sunitha', color: '#6666'},
-        ],
-        
+      users:'',
+      ready: false,
+              
     }
-  }
+  },
+  methods: {
+    usersList(){
+      var list = [];
+      var listArray = this.users.split(',');
+      for (var i = 0; i<listArray.length; i++){
+        var person = listArray[i];
+        list.push({name: person, color: randomColor()})
+      }
+    return list;
+  },
+}
 }
 </script>
 
 <style>
+
 body {
   margin:0;
   padding:0;
